@@ -13,23 +13,21 @@ template<typename Key, size_t N = 7>
 class ADS_set {
 public:
     class Iterator;
-
     using value_type = Key;
     using key_type = Key;
-    using reference = key_type &;
-    using const_reference = const key_type &;
+    using reference = key_type&;
+    using const_reference = const key_type&;
     using size_type = size_t;
     using difference_type = ptrdiff_t;
     using iterator = Iterator;
     using const_iterator = Iterator;
-    using key_compare = less<key_type>;   // B+-Tree
     using key_equal = equal_to<key_type>; // Hashing
     using hasher = hash<key_type>;        // Hashing
 private:
     struct Node {
         key_type value;
-        Node *next = nullptr;
-        Node *head = nullptr;
+        Node *next = 0;
+        Node *head = 0;
 
         ~Node() {
             delete next;
@@ -37,8 +35,7 @@ private:
         }
     };
 
-    Node *table = nullptr;
-
+    Node *table = 0;
 
     size_type sz = 0, table_size = N;
     float max_lf = 0.7;
@@ -47,8 +44,8 @@ private:
 
     bool find_pos(const key_type &key) const {
         size_type a = hash_idx(key);
-        if (table[a].head == nullptr) return false;
-        for (Node *i = table[a].head; i != nullptr; i = i->next) {
+        if (table[a].head == 0) return false;
+        for (Node *i = table[a].head; i != 0; i = i->next) {
             if (key_equal{}(key, i->value)) {
                 return true;
             }
@@ -60,11 +57,9 @@ private:
         Node *tmp = new Node();
         size_type position = hash_idx(key);
 
-
         tmp->next = table[position].head;
         tmp->value = key;
         table[position].head = tmp;
-
 
         ++sz;
         if (sz > max_lf * table_size) rehash();
@@ -74,8 +69,8 @@ private:
     void rehash() {
         vector<Key> v;
         for (size_t i = 0; i < table_size; ++i) {
-            if (table[i].head != nullptr) {
-                for (Node *j = table[i].head; j != nullptr; j = j->next) {
+            if (table[i].head != 0) {
+                for (Node *j = table[i].head; j != 0; j = j->next) {
                     v.push_back(j->value);
                 }
             }
@@ -90,8 +85,6 @@ private:
             insert_unchecked(it2);
         }
     }
-
-
 public:
 
     ADS_set() {
@@ -151,9 +144,9 @@ public:
     void dump(ostream &o = cerr) const {
         for (size_type i = 0; i < table_size; i++) {
             o << "Element[" << i << "]: ";
-            for (Node *j = table[i].head; j != nullptr; j = j->next) {
+            for (Node *j = table[i].head; j != 0; j = j->next) {
                 o << j->value;
-                if (j->next != nullptr) o << " --> ";
+                if (j->next != 0) o << " --> ";
             }
             o << endl;
         }
